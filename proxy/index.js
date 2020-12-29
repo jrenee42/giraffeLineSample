@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require("morgan");
 const axios = require ('axios');
+const https = require('https');
 
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
@@ -35,11 +36,17 @@ app.use((req, res, next) => {
 const newToken = 'Token <put-your-token-here>';
 const orgId = '<put your orgId here>';
 
+//hack:  to get past the self-signed cert issue
+const agent = new https.Agent({  
+  rejectUnauthorized: false
+});
+
 const query= {"query":"from(bucket: \"defbuck\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_cpu\")\n  |> filter(fn: (r) => r[\"_field\"] == \"usage_percent\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")","extern":{"type":"File","package":null,"imports":null,"body":[{"type":"OptionStatement","assignment":{"type":"VariableAssignment","id":{"type":"Identifier","name":"v"},"init":{"type":"ObjectExpression","properties":[{"type":"Property","key":{"type":"Identifier","name":"timeRangeStart"},"value":{"type":"UnaryExpression","operator":"-","argument":{"type":"DurationLiteral","values":[{"magnitude":1,"unit":"h"}]}}},{"type":"Property","key":{"type":"Identifier","name":"timeRangeStop"},"value":{"type":"CallExpression","callee":{"type":"Identifier","name":"now"}}},{"type":"Property","key":{"type":"Identifier","name":"windowPeriod"},"value":{"type":"DurationLiteral","values":[{"magnitude":10000,"unit":"ms"}]}}]}}}]},"dialect":{"annotations":["group","datatype","default"]}};
 
 app.post('/giraffe_influxData',(req,res) => {
 
     axios({
+	httpsAgent: agent,
 	method: 'post',
 	url: API_SERVICE_URL,
 	params: {
@@ -55,6 +62,7 @@ app.post('/giraffe_influxData',(req,res) => {
 	res.send(resp.data);
     }).catch(err => {
 	console.log('have a problem; ', err);
+	res.status(500).send('internal error');
     });
 });
 
