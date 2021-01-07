@@ -13,7 +13,9 @@ const PORT = 3000;
 const HOST = "localhost";
 
 //decoupling so easier to swap out/use different servers
-const localUrl = 'http://kubernetes.docker.internal:8080/api/v2/query' ;
+
+//NOTE:  local server starts with https
+const localUrl = 'https://kubernetes.docker.internal:8080/api/v2/query' ;
 const remoteUrl= "https://us-east-1-1.aws.cloud2.influxdata.com/api/v2/query";
 
 //point this to the server you are using
@@ -34,21 +36,31 @@ app.use((req, res, next) => {
 });
 
 const newToken = 'Token <put-your-token-here>';
-const orgId = '<put your orgId here>';
+const orgId = '<put your org id here>';
 
-//hack:  to get past the self-signed cert issue
-const agent = new https.Agent({  
+const query= {"query":"from(bucket: \"defbuck\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_cpu\")\n  |> filter(fn: (r) => r[\"_field\"] == \"usage_percent\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")","extern":{"type":"File","package":null,"imports":null,"body":[{"type":"OptionStatement","assignment":{"type":"VariableAssignment","id":{"type":"Identifier","name":"v"},"init":{"type":"ObjectExpression","properties":[{"type":"Property","key":{"type":"Identifier","name":"timeRangeStart"},"value":{"type":"UnaryExpression","operator":"-","argument":{"type":"DurationLiteral","values":[{"magnitude":1,"unit":"h"}]}}},{"type":"Property","key":{"type":"Identifier","name":"timeRangeStop"},"value":{"type":"CallExpression","callee":{"type":"Identifier","name":"now"}}},{"type":"Property","key":{"type":"Identifier","name":"windowPeriod"},"value":{"type":"DurationLiteral","values":[{"magnitude":10000,"unit":"ms"}]}}]}}}]},"dialect":{"annotations":["group","datatype","default"]}};
+
+//to get past the self-signed cert issue: ignore the need for a cert
+// DO NOT DO THIS IF SHARING PRIVATE DATA WITH SERVICE
+
+//if you want to not use this workaround, then you need to put the actual cert into
+//this agent; like so: (instead of the agent in the code below)
+
+//const httpsAgent = new https.Agent({ ca: MY_CA_BUNDLE });
+
+//see https://stackoverflow.com/questions/51363855/how-to-configure-axios-to-use-ssl-certificate
+//for details
+const httpsAgent = new https.Agent({  
   rejectUnauthorized: false
 });
 
-const query= {"query":"from(bucket: \"defbuck\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"docker_container_cpu\")\n  |> filter(fn: (r) => r[\"_field\"] == \"usage_percent\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")","extern":{"type":"File","package":null,"imports":null,"body":[{"type":"OptionStatement","assignment":{"type":"VariableAssignment","id":{"type":"Identifier","name":"v"},"init":{"type":"ObjectExpression","properties":[{"type":"Property","key":{"type":"Identifier","name":"timeRangeStart"},"value":{"type":"UnaryExpression","operator":"-","argument":{"type":"DurationLiteral","values":[{"magnitude":1,"unit":"h"}]}}},{"type":"Property","key":{"type":"Identifier","name":"timeRangeStop"},"value":{"type":"CallExpression","callee":{"type":"Identifier","name":"now"}}},{"type":"Property","key":{"type":"Identifier","name":"windowPeriod"},"value":{"type":"DurationLiteral","values":[{"magnitude":10000,"unit":"ms"}]}}]}}}]},"dialect":{"annotations":["group","datatype","default"]}};
 
 app.post('/giraffe_influxData',(req,res) => {
 
     axios({
-	httpsAgent: agent,
-	method: 'post',
 	url: API_SERVICE_URL,
+	httpsAgent : httpsAgent,
+        method: "POST",
 	params: {
 	    'orgID': orgId 
 	},

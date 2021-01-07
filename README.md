@@ -22,7 +22,9 @@ Steps:
 
        or
 
-       http://kubernetes.docker.internal:8080/api/v2/query
+       https://kubernetes.docker.internal:8080/api/v2/query
+
+      Note that the local server is using https and not http 
 
    B.  go to your server, and note the orgId:
         the url will be something like this:
@@ -32,23 +34,41 @@ Steps:
 
         whatever is after the "orgs/"; that is your orgId.  in this case, xxyy88a
 
-        copy this orgId into the 'index.js' file in the proxy directory; on line 36 overwrite the string with this new value.
+        copy this orgId into the 'index.js' file in the proxy directory; on line 39 overwrite the string with this new value.
 
    C.  get and paste in the token.
         i) make the token (part 1):
 	    go to Data (on the left nav menu), then the "Tokens" Tab; and press the "Generate" dropdown button on the right; select the "all Access token"
 	ii) a dialog will pop up, give it a name in the form, and click "save"
 	iii) click on the just-created token, a dialog will pop up, and there will be a long string at the top of the dialog.  below that there will be a 'copy to clipboard button'.  press that button to copy the long token string to the clipboard
-	iv) go to line 35 of index.js, and paste in the token you just copied over '<put-your-token-here>'.
+	iv) go to line 38 of index.js, and paste in the token you just copied over '<put-your-token-here>'.
 	    leave the preamble "Token " there.
-	    so if your token string is abcdefg;  the line should be:
+	    so if your token string is 'abcdefg=='  the line should be:
 ```javascript
-const newToken = 'Token abcdefg';
+const newToken = 'Token abcdefg==';
 	    ```
 	 save index.js
 	    
+   D. Decide what you want to do about ssl
 
-   D.  get a query:
+    starting in late 2020/early 2021; the influxdata server is now uses a certificate for ssl.
+
+    Therefore,  the proxy either needs to use the certificate for the server or ignore it.
+
+    Currently, the proxy is setup to ignore it; using this code:
+
+```javascript
+const httpsAgent = new https.Agent({  
+  rejectUnauthorized: false
+});
+```
+ and the agent is passed into the proxy.
+
+ there is instructions in index.js about how to use a certificate instead; details are at:
+ https://stackoverflow.com/questions/51363855/how-to-configure-axios-to-use-ssl-certificate
+
+
+   E.  get a query:
 
         i) go to a dashboard, or to the explorer, and make a line graph
 	   you may need to set the data time period to the last week .
@@ -129,10 +149,38 @@ take the above escaped query, and paste this over the current query in line 38 o
 }
 ```
 
+   C.  start it with the command: 'yarn start'
+   D.  test it; goto:  http://localhost:3000/info in your browser.
+      you should see the message: 'This is a proxy service which proxies APIs for giraffe development.'
+      if so, your proxy is up and running!
+	
 
-3) set up the client.
+
+3) set up the client and use it:
     the client dir was created with create-react-app.
 
+    cd into the client directory, then:
+
+     A.  install needed packages:
+         %npm install
+
+     B.  start the client:
+        %npm start
+
+         allow it to start on a port other than 3000
+	 and click 'yes' when the terminal asks you about permissions.
+
+
+     depending on your configuration, a browser may be launched with the new page.
+
+    if not, bring up localhost on the new port; ie:
+
+http://localhost:3001/
+
+then, click the 'fetch' button.  you should next see a graph  displaying data, the same one that you were able to see in the influxdata dashboard.
+
+
+Congratulations!  you now have a giraffe sample app up and running.
 
 
   
