@@ -17,11 +17,10 @@ Prerequisites:
 Steps:
 
 1) get your influxdata server up and running,  have at least one cell in a dashboard up and running and displaying a line graph
-   A. note the url for the server; for example:
+   A. note the url for the server; for example; either of these:
+
+```
        https://us-east-1-1.aws.cloud2.influxdata.com/api/v2/query
-
-       or
-
        https://kubernetes.docker.internal:8080/api/v2/query
 
       Note that the local server is using https and not http 
@@ -30,11 +29,10 @@ Steps:
         the url will be something like this:
 	```
 	https://kubernetes.docker.internal:8080/orgs/xxyy88a
-	```
 
-        whatever is after the "orgs/"; that is your orgId.  in this case, xxyy88a
+whatever is after the "orgs/"; that is your orgId.  in this case, xxyy88a
 
-        copy this orgId into the 'index.js' file in the proxy directory; on line 39 overwrite the string with this new value.
+copy this orgId into the 'index.js' file in the proxy directory; on line 39 overwrite the string with this new value.
 
    C.  get and paste in the token.
         i) make the token (part 1):
