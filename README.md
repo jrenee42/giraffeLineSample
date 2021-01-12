@@ -76,7 +76,9 @@ const httpsAgent = new https.Agent({
 	    then click "submit"
 
          you should see a graph.  don't go to the next step til you can see something
-	  (see screen shot; 3:05pm; 12/29)
+	 
+	  ![a working line graph
+	  ](https://github.com/jrenee42/giraffeLineSample/blob/main/workingGraph.png?raw=true)
 
       2. go to the network tab in the developer tools
             find a line that says 'query'; right click on it, select "Copy"-> "Copy as fetch"
