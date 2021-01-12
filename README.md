@@ -80,10 +80,9 @@ const httpsAgent = new https.Agent({
 	  ![a working line graph
 	  ](https://github.com/jrenee42/giraffeLineSample/blob/main/workingGraph.png?raw=true)
 
-      2. go to the network tab in the developer tools
-            find a line that says 'query'; right click on it, select "Copy"-> "Copy as fetch"
+      2. go to the network tab in the developer tools<br> find a line that says 'query'; right click on it, select "Copy"-> "Copy as fetch"
 
-it will look something like this:
+The text you just copied will look something like this:
 ```
  fetch("https://kubernetes.docker.internal:8080/api/v2/query?orgID=196bd810109198d1", {
   "headers": {
