@@ -13,6 +13,7 @@ Prerequisites:
 ## 1. Influx server configuration
 
  get your influxdata server up and running,  have at least one cell in a dashboard up and running and displaying a line graph
+
    A. note the url for the server; for example; either of these:
 
        https://us-east-1-1.aws.cloud2.influxdata.com/api/v2/query
@@ -51,7 +52,7 @@ copy this orgId into the 'index.js' file in the proxy directory; on line 39 over
 	    
   D. Decide what you want to do about ssl
 
-   starting in late 2020/early 2021; the influxdata server is now uses a certificate for ssl.
+   starting in late 2020/early 2021; the influxdata server uses a certificate for ssl.
   Therefore,  the proxy either needs to use the certificate for the server or ignore it.
 
    Currently, the proxy is setup to ignore it; using this code:
@@ -80,7 +81,7 @@ const httpsAgent = new https.Agent({
 	  ![a working line graph
 	  ](https://github.com/jrenee42/giraffeLineSample/blob/main/workingGraph.png?raw=true)
 
-      2. go to the network tab in the developer tools<br> find a line that says 'query'; right click on it, select "Copy"-> "Copy as fetch"
+   2. go to the network tab in the developer tools<br> find a line that says 'query'; right click on it, select "Copy"-> "Copy as fetch"
 
 The text you just copied will look something like this:
 ```
@@ -104,7 +105,7 @@ The text you just copied will look something like this:
 });
 ```
 
-take the "query" part, and un-escape the json.
+Take the "query" part, and un-escape the json.
 
    you can do that via pasting the result you just got into an unescaper, like here:
        https://www.freeformatter.com/json-escape.html#ad-output
@@ -117,7 +118,7 @@ the result for above:; using the website posted above (it may take a few minutes
 take the escaped query you just generated, and paste this over the current query in line 38 of index.js in the proxy directory.
 
 
-## 2. set up your proxy server
+## 2. Set up your proxy server
 
    these instructions are from https://www.twilio.com/blog/node-js-proxy-server
    
@@ -152,13 +153,13 @@ take the escaped query you just generated, and paste this over the current query
 
    4. start it with the command: 'yarn start'
    5.  test it; goto:  http://localhost:3000/info in your browser.
-      you should see the message: 'This is a proxy service which proxies APIs for giraffe development.'
-      if so, your proxy is up and running!
+        You should see the message: 'This is a proxy service which proxies APIs for giraffe development.'
+      If so, your proxy is up and running!
 	
 
-## 3. set up the client and use it:
+## 3. Set up the client and use it:
 
-   the client dir was created with create-react-app.
+   The client dir was created with create-react-app.
 
    cd into the client directory, then:
 
@@ -170,15 +171,15 @@ take the escaped query you just generated, and paste this over the current query
  ```
     %npm start
 ```
-  allow it to start on a port other than 3000
+  Allow it to start on a port other than 3000
   and click 'yes' when the terminal asks you about permissions.
 
- depending on your configuration, a browser may be launched with the new page.
- if not, bring up localhost on the new port; ie:
+ Depending on your configuration, a browser may be launched with the new page.
+ If not, bring up localhost on the new port; ie:
 
 http://localhost:3001/
 
-then, click the 'fetch' button.  you should next see a graph  displaying data, the same one that you were able to see in the influxdata dashboard.
+then, click the 'fetch' button.  You should next see a graph  displaying data, the same one that you were able to see in the influxdata dashboard.
 
 Congratulations!  you now have a giraffe sample app up and running.
 
